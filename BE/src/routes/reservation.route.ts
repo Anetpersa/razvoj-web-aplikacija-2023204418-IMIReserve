@@ -28,6 +28,16 @@ ReservationRoute.post('/', async (req, res) => {
     }
 });
 
+ReservationRoute.patch('/:id/status', async (req, res) => {
+    try {
+        const id = Number.parseInt(req.params.id);
+        const { status } = req.body;
+        res.json(await ReservationService.updateReservationStatus(id, status));
+    } catch (e) {
+        res.status(500).json({ message: e.message, timestamp: new Date() });
+    }
+});
+
 ReservationRoute.delete('/:id', async (req, res) => {
     try {
         const id = Number.parseInt(req.params.id);

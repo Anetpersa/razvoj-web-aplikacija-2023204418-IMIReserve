@@ -34,6 +34,25 @@ export class ReservationService {
         return data;
     }
 
+    static async updateReservationStatus(id: number, status: string) {
+        if (status !== 'confirmed' && status !== 'cancelled')
+            throw new Error('Neispravan status. Dozvoljene vrednosti: confirmed, cancelled');
+
+        const data = await repo.findOne({
+            where: { reservationId: id, deletedAt: IsNull() }
+        });
+        if (data == undefined)
+            throw new Error('Rezervacija nije nadjena');
+
+        if (data.status !== 'pending')
+            throw new Error('Status rezervacije se može promeniti samo iz pending stanja');
+
+        data.status = status as 'confirmed' | 'cancelled';
+        const updated = await repo.save(data);
+        delete updated.deletedAt;
+        return updated;
+    }
+
     static async deleteReservation(id: number) {
         const data = await repo.findOne({
             where: { reservationId: id, deletedAt: IsNull() }
