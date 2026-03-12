@@ -1,0 +1,37 @@
+{
+  "name": "imireserve-backend",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/Anetpersa/razvoj-web-aplikacija-2023204418-IMIReserve#readme",
+  "bugs": {
+    "url": "https://github.com/Anetpersa/razvoj-web-aplikacija-2023204418-IMIReserve/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Anetpersa/razvoj-web-aplikacija-2023204418-IMIReserve.git"
+  },
+  "license": "MIT",
+  "author": "Ana Stancic",
+  "type": "commonjs",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "^1.13.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mysql2": "^3.19.1",
+    "typeorm": "^0.3.28",
+    "typeorm-model-generator": "^0.4.6",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.9.36",
+    "@types/dotenv": "^6.1.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2"
+  }
+}
