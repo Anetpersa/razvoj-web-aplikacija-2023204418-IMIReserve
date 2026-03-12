@@ -50,15 +50,15 @@ export class Reservation {
   deletedAt: Date | null;
 
   @ManyToOne(() => Instrument, (instrument) => instrument.reservations, {
-    onDelete: "NO ACTION",
-    onUpdate: "NO ACTION",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   })
   @JoinColumn([{ name: "instrument_id", referencedColumnName: "instrumentId" }])
   instrument: Instrument;
 
   @ManyToOne(() => Researcher, (researcher) => researcher.reservations, {
-    onDelete: "NO ACTION",
-    onUpdate: "NO ACTION",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
   })
   @JoinColumn([{ name: "researcher_id", referencedColumnName: "researcherId" }])
   researcher: Researcher;
