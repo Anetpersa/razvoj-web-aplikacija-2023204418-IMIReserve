@@ -5,13 +5,28 @@ import { Instrument } from "../entities/Instrument";
 const repo = AppDataSource.getRepository(Instrument);
 
 export class InstrumentService {
-    static async getAllInstruments() {
-        const data = await repo.find({
+    static async getAllInstruments(page = 0, size = 10) {
+        const [data, total] = await repo.findAndCount({
             where: { deletedAt: IsNull() },
-            relations: { category: true, facility: true }
+            relations: { category: true, facility: true },
+            skip: page * size,
+            take: size,
+            order: { name: "ASC" }
         });
+
         data.forEach(e => delete e.deletedAt);
-        return data;
+
+        return {
+            content: data,
+            totalElements: total,
+            totalPages: Math.ceil(total / size),
+            number: page,
+            size: size,
+            first: page === 0,
+            last: page >= Math.ceil(total / size) - 1,
+            numberOfElements: data.length,
+            empty: data.length === 0
+        }
     }
 
     static async getInstrumentById(id: number) {

@@ -5,7 +5,9 @@ export const InstrumentRoute = Router();
 
 InstrumentRoute.get('/', async (req, res) => {
     try {
-        res.json(await InstrumentService.getAllInstruments());
+        const page = req.query.page ? Number.parseInt(req.query.page as string) : 0;
+        const size = req.query.size ? Number.parseInt(req.query.size as string) : 10;
+        res.json(await InstrumentService.getAllInstruments(page, size));
     } catch (e) {
         res.status(500).json({ message: e.message, timestamp: new Date() });
     }

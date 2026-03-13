@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { InstrumentModel } from '@/models/instrument.model'
+import type { PageModel } from '@/models/page.model'
 
 const client = axios.create({
     baseURL: 'http://localhost:3000/api',
@@ -12,8 +13,8 @@ const client = axios.create({
 })
 
 export class InstrumentService {
-    static async getAllInstruments() {
-        return await client.get<InstrumentModel[]>('/instrument')
+    static async getAllInstruments(page = 0, size = 10) {
+        return await client.get<PageModel<InstrumentModel>>(`/instrument?page=${page}&size=${size}`)
     }
 
     static async getInstrumentById(id: number) {
