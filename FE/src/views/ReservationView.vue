@@ -45,7 +45,10 @@ onMounted(() => {
 function loadReservations() {
   ReservationService.getAllReservations()
     .then(rsp => {
+      console.log('Sve rezervacije:', rsp.data)
+      console.log('Researcher iz localStorage:', researcher)
       reservations.value = rsp.data.filter(r => r.researcherId === researcher.researcherId)
+      console.log('Filtrirane rezervacije:', reservations.value)
     })
     .catch(() => error.value = 'Greška pri učitavanju rezervacija.')
 }

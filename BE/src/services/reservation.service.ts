@@ -8,7 +8,7 @@ export class ReservationService {
     static async getAllReservations() {
         const data = await repo.find({
             where: { deletedAt: IsNull() },
-            relations: { instrument: true, researcher: true }
+            relations: { instrument: { category: true, facility: true }, researcher: true }
         });
         data.forEach(e => delete e.deletedAt);
         return data;
@@ -17,7 +17,7 @@ export class ReservationService {
     static async getReservationById(id: number) {
         const data = await repo.findOne({
             where: { reservationId: id, deletedAt: IsNull() },
-            relations: { instrument: true, researcher: true }
+            relations: { instrument: { category: true, facility: true }, researcher: true }
         });
         if (data == undefined)
             throw new Error('Rezervacija nije nadjena');
