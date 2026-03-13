@@ -2,7 +2,9 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ReservationService } from '@/services/reservation.services'
+import { InstrumentService } from '@/services/instrument.services'
 import type { ReservationModel } from '@/models/reservation.model'
+import type { InstrumentModel } from '@/models/instrument.model'
 
 const router = useRouter()
 const route = useRoute()
@@ -14,6 +16,7 @@ const successMsg = ref<string | null>(null)
 
 // forma
 const showForm = ref(false)
+const allInstruments = ref<InstrumentModel[]>([])
 const formInstrumentId = ref<number | null>(null)
 const formInstrumentName = ref<string>('')
 const formStartTime = ref<string>('')
@@ -33,6 +36,7 @@ onMounted(() => {
     return
   }
   loadReservations()
+  loadAllInstruments()
 
   // ako dolazimo sa HomeView sa query parametrima
   if (route.query.instrumentId) {
@@ -42,13 +46,16 @@ onMounted(() => {
   }
 })
 
+function loadAllInstruments() {
+  InstrumentService.getAllInstruments(0, 1000)
+    .then(rsp => allInstruments.value = rsp.data.content)
+    .catch(() => error.value = 'Greška pri učitavanju instrumenata.')
+}
+
 function loadReservations() {
   ReservationService.getAllReservations()
     .then(rsp => {
-      console.log('Sve rezervacije:', rsp.data)
-      console.log('Researcher iz localStorage:', researcher)
       reservations.value = rsp.data.filter(r => r.researcherId === researcher.researcherId)
-      console.log('Filtrirane rezervacije:', reservations.value)
     })
     .catch(() => error.value = 'Greška pri učitavanju rezervacija.')
 }
@@ -187,7 +194,12 @@ function formatDate(dt: string) {
 
         <div class="mb-3">
           <label class="form-label">Instrument</label>
-          <input type="text" class="form-control" :value="formInstrumentName" disabled />
+          <select class="form-select" v-model="formInstrumentId">
+            <option :value="null" disabled>-- Izaberite instrument --</option>
+            <option v-for="i in allInstruments" :key="i.instrumentId" :value="i.instrumentId">
+              {{ i.name }} ({{ i.category.name }} — {{ i.facility.name }})
+            </option>
+          </select>
         </div>
 
         <div class="mb-3">
