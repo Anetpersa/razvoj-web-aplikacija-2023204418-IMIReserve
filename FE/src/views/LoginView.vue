@@ -1,29 +1,32 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ResearcherService } from '@/services/researcher.services'
-import type { ResearcherModel } from '@/models/researcher.model'
+import { AuthService } from '@/services/auth.service'
 
 const router = useRouter()
-const researchers = ref<ResearcherModel[]>([])
-const selectedId = ref<number | null>(null)
+const email = ref<string>('')
+const password = ref<string>('')
 const error = ref<string | null>(null)
+const loading = ref<boolean>(false)
 
-onMounted(() => {
-  ResearcherService.getAllResearchers()
-    .then(rsp => researchers.value = rsp.data)
-    .catch(() => error.value = 'Greška pri učitavanju istraživača.')
-})
-
-function login() {
-  if (selectedId.value == null) {
-    error.value = 'Molimo izaberite istraživača.'
+async function login() {
+  error.value = null
+  if (!email.value || !password.value) {
+    error.value = 'Sva polja su obavezna.'
     return
   }
-  const researcher = researchers.value.find(r => r.researcherId === selectedId.value)
-  if (!researcher) return
-  localStorage.setItem('researcher', JSON.stringify(researcher))
-  router.push('/home')
+
+  loading.value = true
+  try {
+    const rsp = await AuthService.login(email.value, password.value)
+    AuthService.saveTokens(rsp.data.access, rsp.data.refresh)
+    AuthService.saveResearcher(rsp.data)
+    router.push('/home')
+  } catch (e: any) {
+    error.value = e.response?.data?.message || 'Pogrešan email ili šifra.'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -38,17 +41,22 @@ function login() {
         <div v-if="error" class="alert alert-danger">{{ error }}</div>
 
         <div class="mb-3">
-          <label for="researcher" class="form-label">Izaberite istraživača</label>
-          <select id="researcher" class="form-select" v-model="selectedId">
-            <option :value="null" disabled>-- Izaberite --</option>
-            <option v-for="r in researchers" :key="r.researcherId" :value="r.researcherId">
-              {{ r.title }} {{ r.name }}
-            </option>
-          </select>
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" v-model="email" placeholder="ime.prezime@imi.rs" />
         </div>
 
-        <button class="btn btn-save w-100" @click="login">
-          <i class="fa-solid fa-right-to-bracket me-2"></i> Prijavi se
+        <div class="mb-3">
+          <label class="form-label">Šifra</label>
+          <input type="password" class="form-control" v-model="password" placeholder="••••••••" @keyup.enter="login" />
+        </div>
+
+        <button class="btn btn-save w-100" @click="login" :disabled="loading">
+          <span v-if="loading">
+            <i class="fa-solid fa-spinner fa-spin me-2"></i> Prijava u toku...
+          </span>
+          <span v-else>
+            <i class="fa-solid fa-right-to-bracket me-2"></i> Prijavi se
+          </span>
         </button>
       </div>
     </div>

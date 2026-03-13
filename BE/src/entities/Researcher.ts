@@ -12,6 +12,7 @@ import { Reservation } from "./Reservation";
 
 @Index("fk_research_group_id_idx", ["researchGroupId"], {})
 @Index("uq_researcher_name", ["name"], { unique: true })
+@Index("uq_researcher_email", ["email"], { unique: true })
 @Entity("researcher", { schema: "imi_reserve" })
 export class Researcher {
   @PrimaryGeneratedColumn({
@@ -26,6 +27,12 @@ export class Researcher {
 
   @Column("varchar", { name: "title", length: 255 })
   title: string;
+
+  @Column("varchar", { name: "email", unique: true, length: 255 })
+  email: string;
+
+  @Column("varchar", { name: "password", length: 255 })
+  password: string;
 
   @Column("int", { name: "research_group_id", unsigned: true })
   researchGroupId: number;
