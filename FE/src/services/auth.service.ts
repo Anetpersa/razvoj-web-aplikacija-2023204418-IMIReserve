@@ -12,20 +12,22 @@ export class AuthService {
         return await client.post('/auth/login', { email, password })
     }
 
-    static async refresh() {
-        const refresh = localStorage.getItem('refresh')
-        return await client.post('/auth/refresh', null, {
-            headers: { Authorization: `Bearer ${refresh}` }
-        })
-    }
-
     static getAccessToken() {
         return localStorage.getItem('access')
+    }
+
+    static getRefreshToken() {
+        return localStorage.getItem('refresh')
     }
 
     static saveTokens(access: string, refresh: string) {
         localStorage.setItem('access', access)
         localStorage.setItem('refresh', refresh)
+    }
+
+    static saveAuth(data: any) {
+        localStorage.setItem('access', data.access)
+        localStorage.setItem('refresh', data.refresh)
     }
 
     static saveResearcher(data: any) {
@@ -37,10 +39,14 @@ export class AuthService {
         }))
     }
 
-    static logout() {
+    static clearAuth() {
         localStorage.removeItem('access')
         localStorage.removeItem('refresh')
         localStorage.removeItem('researcher')
+    }
+
+    static logout() {
+        this.clearAuth()
     }
 
     static isLoggedIn() {
