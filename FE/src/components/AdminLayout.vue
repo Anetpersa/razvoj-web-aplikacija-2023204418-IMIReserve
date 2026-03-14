@@ -19,11 +19,14 @@ function logout() {
         <h2>Institut za medicinska istraživanja</h2>
         <p>Univerzitet u Beogradu — Admin panel</p>
       </div>
+      <div v-if="admin" class="text-white">
+        <i class="fa-solid fa-shield-halved me-1"></i> {{ admin.name }}
+      </div>
     </header>
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
       <div class="container-lg">
-        <a class="navbar-brand ms-3" href="#">
+        <a class="navbar-brand ms-3" href="#" @click.prevent="router.push('/admin')">
           <i class="fa-solid fa-shield-halved"></i> IMIReserve Admin
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -44,6 +47,11 @@ function logout() {
               </RouterLink>
             </li>
             <li class="nav-item">
+              <RouterLink class="nav-link" to="/admin/research-groups">
+                <i class="fa-solid fa-users"></i> Grupe
+              </RouterLink>
+            </li>
+            <li class="nav-item">
               <RouterLink class="nav-link" to="/admin/categories">
                 <i class="fa-solid fa-tag"></i> Kategorije
               </RouterLink>
@@ -59,12 +67,7 @@ function logout() {
               </RouterLink>
             </li>
           </ul>
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0" v-if="admin">
-            <li class="nav-item d-flex align-items-center me-3">
-              <span class="navbar-text">
-                <i class="fa-solid fa-shield-halved me-1"></i> {{ admin.name }}
-              </span>
-            </li>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <button class="btn btn-logout" @click="logout">
                 <i class="fa-solid fa-right-from-bracket me-1"></i> Odjavi se
