@@ -1,7 +1,20 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { computed } from 'vue'
+import { RouterLink, RouterView, useRouter, useRoute } from 'vue-router'
+import { AuthService } from '@/services/auth.service'
 
+const router = useRouter()
+const route = useRoute()
 const year = new Date().getFullYear()
+
+const researcher = computed(() => JSON.parse(localStorage.getItem('researcher') || 'null'))
+
+function logout() {
+  AuthService.logout()
+  router.push('/')
+}
+
+const isLoginPage = () => route.name === 'login'
 </script>
 
 <template>
@@ -24,8 +37,8 @@ const year = new Date().getFullYear()
           aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-          <ul class="navbar-nav mb-2 mb-lg-0">
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav" v-if="!isLoginPage()">
+          <ul class="navbar-nav mb-2 mb-lg-0 me-auto">
             <li class="nav-item">
               <RouterLink class="nav-link" to="/home">
                 <i class="fa-solid fa-house"></i> Početna
@@ -35,6 +48,18 @@ const year = new Date().getFullYear()
               <RouterLink class="nav-link" to="/reservations">
                 <i class="fa-solid fa-calendar-days"></i> Moje rezervacije
               </RouterLink>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0" v-if="researcher">
+            <li class="nav-item d-flex align-items-center me-3">
+              <span class="navbar-text">
+                <i class="fa-solid fa-user me-1"></i> {{ researcher.title }} {{ researcher.name }}
+              </span>
+            </li>
+            <li class="nav-item">
+              <button class="btn btn-logout" @click="logout">
+                <i class="fa-solid fa-right-from-bracket me-1"></i> Odjavi se
+              </button>
             </li>
           </ul>
         </div>
@@ -97,6 +122,18 @@ footer p {
 
 .btn-save:hover,
 .btn-open:hover {
+  background-color: #7a1212;
+  border-color: #7a1212;
+  color: #fff;
+}
+
+.btn-logout {
+  background-color: transparent;
+  border-color: #fff;
+  color: #fff;
+}
+
+.btn-logout:hover {
   background-color: #7a1212;
   border-color: #7a1212;
   color: #fff;
