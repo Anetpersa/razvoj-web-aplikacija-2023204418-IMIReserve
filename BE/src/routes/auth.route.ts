@@ -3,6 +3,17 @@ import { AuthService } from "../services/auth.service"
 
 export const AuthRoute = Router()
 
+AuthRoute.post('/unified-login', async (req, res) => {
+    try {
+        res.json(await AuthService.unifiedLogin(req.body))
+    } catch (e) {
+        res.status(401).json({
+            message: e.message,
+            timestamp: new Date()
+        })
+    }
+})
+
 AuthRoute.post('/login', async (req, res) => {
     try {
         res.json(await AuthService.login(req.body))

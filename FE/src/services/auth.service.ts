@@ -12,6 +12,14 @@ export class AuthService {
         return await client.post('/auth/login', { email, password })
     }
 
+    static async adminLogin(email: string, password: string) {
+        return await client.post('/auth/admin/login', { email, password })
+    }
+
+    static async unifiedLogin(email: string, password: string) {
+        return await client.post('/auth/unified-login', { email, password })
+    }
+
     static getAccessToken() {
         return localStorage.getItem('access')
     }
@@ -39,10 +47,24 @@ export class AuthService {
         }))
     }
 
+    static saveAdmin(data: any) {
+        localStorage.setItem('admin', JSON.stringify({
+            adminId: data.adminId,
+            email: data.email,
+            name: data.name,
+            role: data.role
+        }))
+    }
+
+    static getAdmin() {
+        return JSON.parse(localStorage.getItem('admin') || 'null')
+    }
+
     static clearAuth() {
         localStorage.removeItem('access')
         localStorage.removeItem('refresh')
         localStorage.removeItem('researcher')
+        localStorage.removeItem('admin')
     }
 
     static logout() {
@@ -51,5 +73,9 @@ export class AuthService {
 
     static isLoggedIn() {
         return localStorage.getItem('access') !== null
+    }
+
+    static isAdmin() {
+        return localStorage.getItem('admin') !== null
     }
 }

@@ -17,6 +17,54 @@ const refreshSecret = process.env.JWT_REFRESH_SECRET
 const refreshTTL = parseInt(process.env.JWT_REFRESH_TTL || "86400")
 
 export class AuthService {
+    static async unifiedLogin(model: LoginModel) {
+        // prvo proveravamo admin tabelu
+        try {
+            const admin = await this.getAdminByEmail(model.email)
+            if (await bcrypt.compare(model.password, admin.password)) {
+                const payload = {
+                    adminId: admin.adminId,
+                    email: admin.email,
+                    name: admin.name,
+                    role: 'admin'
+                }
+                return {
+                    adminId: admin.adminId,
+                    email: admin.email,
+                    name: admin.name,
+                    role: 'admin',
+                    access: jwt.sign(payload, accessSecret, { expiresIn: accessTTL }),
+                    refresh: jwt.sign(payload, refreshSecret, { expiresIn: refreshTTL })
+                }
+            }
+        } catch (e) {
+            // nije admin, nastavljamo
+        }
+
+        // onda proveravamo researcher tabelu
+        const researcher = await this.getResearcherByEmail(model.email)
+        if (await bcrypt.compare(model.password, researcher.password)) {
+            const payload = {
+                researcherId: researcher.researcherId,
+                email: researcher.email,
+                name: researcher.name,
+                title: researcher.title,
+                role: 'researcher'
+            }
+            return {
+                researcherId: researcher.researcherId,
+                email: researcher.email,
+                name: researcher.name,
+                title: researcher.title,
+                role: 'researcher',
+                access: jwt.sign(payload, accessSecret, { expiresIn: accessTTL }),
+                refresh: jwt.sign(payload, refreshSecret, { expiresIn: refreshTTL })
+            }
+        }
+
+        throw new Error("Pogrešan email ili šifra")
+    }
+
     static async login(model: LoginModel) {
         const researcher = await this.getResearcherByEmail(model.email)
 
@@ -114,6 +162,7 @@ export class AuthService {
 
     static async verifyToken(req: any, res: any, next: any) {
         if (req.path === '/api/auth/login' ||
+            req.path === '/api/auth/unified-login' ||
             req.path === '/api/auth/admin/login' ||
             req.path === '/api/auth/refresh') {
             next()
