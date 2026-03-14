@@ -14,6 +14,17 @@ AuthRoute.post('/login', async (req, res) => {
     }
 })
 
+AuthRoute.post('/admin/login', async (req, res) => {
+    try {
+        res.json(await AuthService.adminLogin(req.body))
+    } catch (e) {
+        res.status(401).json({
+            message: e.message,
+            timestamp: new Date()
+        })
+    }
+})
+
 AuthRoute.post('/refresh', async (req, res) => {
     try {
         const authHeader = req.headers['authorization']
