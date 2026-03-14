@@ -122,7 +122,6 @@ function closeModal() {
       <table class="table table-striped table-hover">
         <thead>
           <tr>
-            <th><i class="fa-solid fa-hashtag"></i> ID</th>
             <th><i class="fa-solid fa-microscope"></i> Naziv</th>
             <th><i class="fa-solid fa-tag"></i> Kategorija</th>
             <th><i class="fa-solid fa-location-dot"></i> Lokacija</th>
@@ -131,10 +130,9 @@ function closeModal() {
         </thead>
         <tbody>
           <tr v-if="filtered.length === 0">
-            <td colspan="5" class="text-center">Nema instrumenata za izabrane filtere.</td>
+            <td colspan="4" class="text-center">Nema instrumenata za izabrane filtere.</td>
           </tr>
           <tr v-for="instrument in filtered" :key="instrument.instrumentId">
-            <td>{{ instrument.instrumentId }}</td>
             <td>
               <span class="instrument-link" @click="openModal(instrument)">
                 {{ instrument.name }} <i class="fa-solid fa-circle-info ms-1"></i>

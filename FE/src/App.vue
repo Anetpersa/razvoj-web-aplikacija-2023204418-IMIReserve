@@ -140,4 +140,8 @@ footer p {
   border-color: #7a1212;
   color: #fff;
 }
+
+th {
+  vertical-align: middle !important;
+}
 </style>

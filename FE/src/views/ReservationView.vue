@@ -175,7 +175,6 @@ function formatDate(dt: string) {
     <table class="table table-striped table-hover">
       <thead>
         <tr>
-          <th><i class="fa-solid fa-hashtag"></i> ID</th>
           <th><i class="fa-solid fa-microscope"></i> Instrument</th>
           <th><i class="fa-solid fa-tag"></i> Kategorija</th>
           <th><i class="fa-solid fa-location-dot"></i> Lokacija</th>
@@ -187,10 +186,9 @@ function formatDate(dt: string) {
       </thead>
       <tbody>
         <tr v-if="filteredAndSorted.length === 0">
-          <td colspan="8" class="text-center">Nema rezervacija.</td>
+          <td colspan="7" class="text-center">Nema rezervacija.</td>
         </tr>
         <tr v-for="r in filteredAndSorted" :key="r.reservationId">
-          <td>{{ r.reservationId }}</td>
           <td>{{ r.instrument.name }}</td>
           <td>{{ r.instrument.category.name }}</td>
           <td>{{ r.instrument.facility.name }}</td>
