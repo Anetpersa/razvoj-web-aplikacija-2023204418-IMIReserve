@@ -73,7 +73,7 @@ const filtered = computed(() => {
 })
 
 function reserve(instrument: InstrumentModel) {
-  router.push({ name: 'reservations', query: { instrumentId: instrument.instrumentId, instrumentName: instrument.name } })
+  router.push({ name: 'new-reservation', query: { instrumentId: instrument.instrumentId, instrumentName: instrument.name } })
 }
 </script>
 

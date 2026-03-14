@@ -11,6 +11,15 @@ ReservationRoute.get('/', async (req, res) => {
     }
 });
 
+ReservationRoute.get('/instrument/:instrumentId', async (req, res) => {
+    try {
+        const instrumentId = Number.parseInt(req.params.instrumentId)
+        res.json(await ReservationService.getReservationsByInstrument(instrumentId))
+    } catch (e) {
+        res.status(500).json({ message: e.message, timestamp: new Date() })
+    }
+})
+
 ReservationRoute.get('/:id', async (req, res) => {
     try {
         const id = Number.parseInt(req.params.id);

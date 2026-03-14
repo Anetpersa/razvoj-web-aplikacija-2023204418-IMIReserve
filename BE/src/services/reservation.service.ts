@@ -25,6 +25,18 @@ export class ReservationService {
         return data;
     }
 
+    static async getReservationsByInstrument(instrumentId: number) {
+        const data = await repo.find({
+            where: {
+                instrumentId: instrumentId,
+                deletedAt: IsNull()
+            },
+            order: { startTime: 'ASC' }
+        });
+        data.forEach(e => delete e.deletedAt);
+        return data;
+    }
+
     static async createReservation(reservation: Reservation) {
         reservation.createdAt = new Date();
         reservation.deletedAt = null;

@@ -1,27 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { ReservationService } from '@/services/reservation.services'
-import { InstrumentService } from '@/services/instrument.services'
 import type { ReservationModel } from '@/models/reservation.model'
-import type { InstrumentModel } from '@/models/instrument.model'
 
 const router = useRouter()
-const route = useRoute()
 
 const researcher = JSON.parse(localStorage.getItem('researcher') || 'null')
 const reservations = ref<ReservationModel[]>([])
 const error = ref<string | null>(null)
 const successMsg = ref<string | null>(null)
-
-// forma
-const showForm = ref(false)
-const allInstruments = ref<InstrumentModel[]>([])
-const formInstrumentId = ref<number | null>(null)
-const formInstrumentName = ref<string>('')
-const formStartTime = ref<string>('')
-const formEndTime = ref<string>('')
-const formError = ref<string | null>(null)
 
 // filteri i sortiranje
 const filterStatus = ref<string>('')
@@ -36,21 +24,7 @@ onMounted(() => {
     return
   }
   loadReservations()
-  loadAllInstruments()
-
-  // ako dolazimo sa HomeView sa query parametrima
-  if (route.query.instrumentId) {
-    formInstrumentId.value = Number(route.query.instrumentId)
-    formInstrumentName.value = String(route.query.instrumentName || '')
-    showForm.value = true
-  }
 })
-
-function loadAllInstruments() {
-  InstrumentService.getAllInstruments(0, 1000)
-    .then(rsp => allInstruments.value = rsp.data.content)
-    .catch(() => error.value = 'Greška pri učitavanju instrumenata.')
-}
 
 function loadReservations() {
   ReservationService.getAllReservations()
@@ -60,7 +34,6 @@ function loadReservations() {
     .catch(() => error.value = 'Greška pri učitavanju rezervacija.')
 }
 
-// unikatne vrednosti za filtere
 const instrumentNames = computed(() => [...new Set(reservations.value.map(r => r.instrument.name))])
 const categoryNames = computed(() => [...new Set(reservations.value.map(r => r.instrument.category.name))])
 const facilityNames = computed(() => [...new Set(reservations.value.map(r => r.instrument.facility.name))])
@@ -93,37 +66,6 @@ function resetFilters() {
   filterCategory.value = ''
   filterFacility.value = ''
   sortBy.value = 'startTime_asc'
-}
-
-async function createReservation() {
-  formError.value = null
-  if (!formInstrumentId.value || !formStartTime.value || !formEndTime.value) {
-    formError.value = 'Sva polja su obavezna.'
-    return
-  }
-  if (new Date(formEndTime.value) <= new Date(formStartTime.value)) {
-    formError.value = 'Vreme završetka mora biti nakon vremena početka.'
-    return
-  }
-
-  try {
-    await ReservationService.createReservation({
-      researcherId: researcher.researcherId,
-      instrumentId: formInstrumentId.value,
-      startTime: formStartTime.value,
-      endTime: formEndTime.value
-    })
-    successMsg.value = 'Rezervacija je uspešno kreirana!'
-    showForm.value = false
-    formStartTime.value = ''
-    formEndTime.value = ''
-    formInstrumentId.value = null
-    formInstrumentName.value = ''
-    loadReservations()
-    setTimeout(() => successMsg.value = null, 3000)
-  } catch (e: any) {
-    formError.value = e.response?.data?.message || 'Greška pri kreiranju rezervacije.'
-  }
 }
 
 async function updateStatus(id: number, status: 'confirmed' | 'cancelled') {
@@ -178,48 +120,13 @@ function formatDate(dt: string) {
   <div>
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h3><i class="fa-solid fa-calendar-days me-2"></i> Moje rezervacije</h3>
-      <button class="btn btn-save" @click="showForm = !showForm">
+      <button class="btn btn-save" @click="router.push('/reservations/new')">
         <i class="fa-solid fa-calendar-plus me-1"></i> Nova rezervacija
       </button>
     </div>
 
     <div v-if="error" class="alert alert-danger">{{ error }}</div>
     <div v-if="successMsg" class="alert alert-success">{{ successMsg }}</div>
-
-    <!-- Forma za novu rezervaciju -->
-    <div v-if="showForm" class="card mb-4">
-      <div class="card-body">
-        <h5 class="card-title">Nova rezervacija</h5>
-        <div v-if="formError" class="alert alert-danger">{{ formError }}</div>
-
-        <div class="mb-3">
-          <label class="form-label">Instrument</label>
-          <select class="form-select" v-model="formInstrumentId">
-            <option :value="null" disabled>-- Izaberite instrument --</option>
-            <option v-for="i in allInstruments" :key="i.instrumentId" :value="i.instrumentId">
-              {{ i.name }} ({{ i.category.name }} — {{ i.facility.name }})
-            </option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Vreme početka</label>
-          <input type="datetime-local" class="form-control" v-model="formStartTime" />
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Vreme završetka</label>
-          <input type="datetime-local" class="form-control" v-model="formEndTime" />
-        </div>
-
-        <button class="btn btn-save me-2" @click="createReservation">
-          <i class="fa-solid fa-floppy-disk me-1"></i> Sačuvaj
-        </button>
-        <button class="btn btn-secondary" @click="showForm = false">
-          Otkaži
-        </button>
-      </div>
-    </div>
 
     <!-- Filteri i sortiranje -->
     <div class="row mb-3 g-2">
@@ -292,24 +199,15 @@ function formatDate(dt: string) {
           <td><span :class="statusClass(r.status)">{{ statusLabel(r.status) }}</span></td>
           <td>
             <div class="btn-group">
-              <button
-                v-if="r.status === 'pending'"
-                class="btn btn-success btn-sm"
-                @click="updateStatus(r.reservationId, 'confirmed')"
-                title="Potvrdi">
+              <button v-if="r.status === 'pending'" class="btn btn-success btn-sm"
+                @click="updateStatus(r.reservationId, 'confirmed')" title="Potvrdi">
                 <i class="fa-solid fa-check"></i>
               </button>
-              <button
-                v-if="r.status === 'pending'"
-                class="btn btn-warning btn-sm"
-                @click="updateStatus(r.reservationId, 'cancelled')"
-                title="Otkaži">
+              <button v-if="r.status === 'pending'" class="btn btn-warning btn-sm"
+                @click="updateStatus(r.reservationId, 'cancelled')" title="Otkaži">
                 <i class="fa-solid fa-xmark"></i>
               </button>
-              <button
-                class="btn btn-danger btn-sm"
-                @click="deleteReservation(r.reservationId)"
-                title="Obriši">
+              <button class="btn btn-danger btn-sm" @click="deleteReservation(r.reservationId)" title="Obriši">
                 <i class="fa-solid fa-trash-can"></i>
               </button>
             </div>

@@ -12,6 +12,11 @@ export class ReservationService {
         return rsp as { data: ReservationModel }
     }
 
+    static async getReservationsByInstrument(instrumentId: number) {
+        const rsp = await MainService.useAxios(`/reservation/instrument/${instrumentId}`)
+        return rsp as { data: ReservationModel[] }
+    }
+
     static async createReservation(payload: Partial<ReservationModel>) {
         return await MainService.useAxios('/reservation', 'post', payload)
     }
