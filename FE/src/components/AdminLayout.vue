@@ -8,7 +8,7 @@ const year = new Date().getFullYear()
 
 function logout() {
     AuthService.logout()
-    router.push('/admin/login')
+    router.push('/')
 }
 </script>
 

@@ -26,6 +26,9 @@ const isLoginPage = () => route.name === 'login'
         <h2>Institut za medicinska istraživanja</h2>
         <p>Univerzitet u Beogradu</p>
       </div>
+      <div v-if="researcher" class="text-white">
+        <i class="fa-solid fa-user me-1"></i> {{ researcher.title }} {{ researcher.name }}
+      </div>
     </header>
 
     <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
@@ -52,11 +55,6 @@ const isLoginPage = () => route.name === 'login'
             </li>
           </ul>
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0" v-if="researcher">
-            <li class="nav-item d-flex align-items-center me-3">
-              <span class="navbar-text">
-                <i class="fa-solid fa-user me-1"></i> {{ researcher.title }} {{ researcher.name }}
-              </span>
-            </li>
             <li class="nav-item">
               <button class="btn btn-logout" @click="logout">
                 <i class="fa-solid fa-right-from-bracket me-1"></i> Odjavi se

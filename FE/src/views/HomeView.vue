@@ -10,6 +10,8 @@ const instruments = ref<PageModel<InstrumentModel>>()
 const selectedCategory = ref<string>('')
 const selectedFacility = ref<string>('')
 const error = ref<string | null>(null)
+const selectedInstrument = ref<InstrumentModel | null>(null)
+const imageLoaded = ref(false)
 
 const researcher = JSON.parse(localStorage.getItem('researcher') || 'null')
 
@@ -75,6 +77,15 @@ const filtered = computed(() => {
 function reserve(instrument: InstrumentModel) {
   router.push({ name: 'new-reservation', query: { instrumentId: instrument.instrumentId, instrumentName: instrument.name } })
 }
+
+function openModal(instrument: InstrumentModel) {
+  selectedInstrument.value = instrument
+  imageLoaded.value = false
+}
+
+function closeModal() {
+  selectedInstrument.value = null
+}
 </script>
 
 <template>
@@ -124,7 +135,11 @@ function reserve(instrument: InstrumentModel) {
           </tr>
           <tr v-for="instrument in filtered" :key="instrument.instrumentId">
             <td>{{ instrument.instrumentId }}</td>
-            <td>{{ instrument.name }}</td>
+            <td>
+              <span class="instrument-link" @click="openModal(instrument)">
+                {{ instrument.name }} <i class="fa-solid fa-circle-info ms-1"></i>
+              </span>
+            </td>
             <td>{{ instrument.category.name }}</td>
             <td>{{ instrument.facility.name }}</td>
             <td>
@@ -135,7 +150,6 @@ function reserve(instrument: InstrumentModel) {
           </tr>
         </tbody>
       </table>
-
 
       <!-- Paginacija -->
       <nav class="mt-3">
@@ -166,10 +180,144 @@ function reserve(instrument: InstrumentModel) {
         </ul>
       </nav>
     </div>
+
+    <!-- Modal -->
+    <div v-if="selectedInstrument" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-card">
+        <button class="btn-close-modal" @click="closeModal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="modal-img-wrapper">
+          <div v-if="!imageLoaded" class="modal-img-placeholder">
+            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+          </div>
+          <img v-if="selectedInstrument.imageUrl" :src="selectedInstrument.imageUrl"
+            :alt="selectedInstrument.name" class="modal-img"
+            :class="{ 'img-hidden': !imageLoaded }"
+            @load="imageLoaded = true"
+            @error="imageLoaded = true" />
+          <div v-if="!selectedInstrument.imageUrl" class="modal-no-img">
+            <i class="fa-solid fa-microscope fa-3x"></i>
+          </div>
+        </div>
+        <div class="modal-info">
+          <h5>{{ selectedInstrument.name }}</h5>
+          <p><i class="fa-solid fa-tag me-2"></i>{{ selectedInstrument.category.name }}</p>
+          <p><i class="fa-solid fa-location-dot me-2"></i>{{ selectedInstrument.facility.name }}</p>
+          <button class="btn btn-save w-100 mt-2" @click="reserve(selectedInstrument); closeModal()">
+            <i class="fa-solid fa-calendar-plus me-1"></i> Rezerviši
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.instrument-link {
+  cursor: pointer;
+  color: inherit;
+}
+
+.instrument-link:hover {
+  color: #cf2e2e;
+}
+
+.instrument-link i {
+  opacity: 0.5;
+  font-size: 0.85rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: #1e1e1e;
+  border-radius: 12px;
+  width: 420px;
+  overflow: hidden;
+  position: relative;
+  padding: 16px;
+}
+
+.btn-close-modal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.5);
+  border: none;
+  color: white;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.modal-img-wrapper {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #2a2a2a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.modal-img-placeholder {
+  position: absolute;
+  color: #941616;
+}
+
+.modal-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.img-hidden {
+  opacity: 0;
+}
+
+
+
+.modal-no-img {
+  width: 100%;
+  height: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #2a2a2a;
+  color: #941616;
+}
+
+.modal-info {
+  padding: 0;
+}
+
+.modal-info h5 {
+  margin-bottom: 12px;
+}
+
+.modal-info p {
+  margin-bottom: 6px;
+  color: #aaa;
+}
+
 .pagination-custom .page-link {
   background-color: #941616;
   border-color: #7a1212;
