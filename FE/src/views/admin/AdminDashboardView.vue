@@ -25,26 +25,6 @@ const admin = AuthService.getAdmin()
       </div>
 
       <div class="col-md-4">
-        <div class="card dashboard-card h-100" @click="router.push('/admin/researchers')">
-          <div class="card-body text-center py-4">
-            <i class="fa-solid fa-user fa-3x mb-3 card-icon"></i>
-            <h5 class="card-title">Istraživači</h5>
-            <p class="card-text text-muted">Pregledajte listu istraživača i njihove istraživačke grupe.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="card dashboard-card h-100" @click="router.push('/admin/reservations')">
-          <div class="card-body text-center py-4">
-            <i class="fa-solid fa-calendar-days fa-3x mb-3 card-icon"></i>
-            <h5 class="card-title">Rezervacije</h5>
-            <p class="card-text text-muted">Pregledajte sve rezervacije - prošle i predstojeće.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
         <div class="card dashboard-card h-100" @click="router.push('/admin/categories')">
           <div class="card-body text-center py-4">
             <i class="fa-solid fa-tag fa-3x mb-3 card-icon"></i>
@@ -60,6 +40,36 @@ const admin = AuthService.getAdmin()
             <i class="fa-solid fa-location-dot fa-3x mb-3 card-icon"></i>
             <h5 class="card-title">Lokacije</h5>
             <p class="card-text text-muted">Upravljajte laboratorijama i lokacijama na kojima se nalaze instrumenti.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card dashboard-card h-100" @click="router.push('/admin/researchers')">
+          <div class="card-body text-center py-4">
+            <i class="fa-solid fa-user fa-3x mb-3 card-icon"></i>
+            <h5 class="card-title">Istraživači</h5>
+            <p class="card-text text-muted">Pregledajte listu istraživača i njihove istraživačke grupe.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card dashboard-card h-100" @click="router.push('/admin/research-groups')">
+          <div class="card-body text-center py-4">
+            <i class="fa-solid fa-users fa-3x mb-3 card-icon"></i>
+            <h5 class="card-title">Istraživačke grupe</h5>
+            <p class="card-text text-muted">Upravljajte istraživačkim grupama instituta.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card dashboard-card h-100" @click="router.push('/admin/reservations')">
+          <div class="card-body text-center py-4">
+            <i class="fa-solid fa-calendar-days fa-3x mb-3 card-icon"></i>
+            <h5 class="card-title">Rezervacije</h5>
+            <p class="card-text text-muted">Pregledajte sve rezervacije - prošle i predstojeće.</p>
           </div>
         </div>
       </div>

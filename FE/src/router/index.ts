@@ -60,6 +60,11 @@ const router = createRouter({
           component: () => import('../views/admin/AdminResearchersView.vue')
         },
         {
+          path: 'research-groups',
+          name: 'admin-research-groups',
+          component: () => import('../views/admin/AdminResearchGroupsView.vue')
+        },
+        {
           path: 'categories',
           name: 'admin-categories',
           component: () => import('../views/admin/AdminCategoriesView.vue')
@@ -90,7 +95,7 @@ router.beforeEach((to, from, next) => {
   } else if (to.name === 'login' && isLoggedIn && !isAdmin) {
     next({ name: 'home' })
   } else if (to.name === 'admin-login' && isAdmin) {
-    next({ name: 'admin-instruments' })
+    next({ name: 'admin-dashboard' })
   } else {
     next()
   }
